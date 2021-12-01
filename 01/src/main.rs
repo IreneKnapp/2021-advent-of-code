@@ -1,7 +1,5 @@
 use advent_lib::prelude::*;
 
-use std::collections::BTreeSet;
-
 
 fn main() -> Result<()> {
   let mut args = std::env::args();
@@ -11,56 +9,57 @@ fn main() -> Result<()> {
   let _ = args.next();
   let filename = args.next().unwrap();
 
-  let mut input = advent_lib::read_int_file(&filename)?;
+  let input = advent_lib::read_int_file(&filename)?;
 
-  input.sort();
-
-  let mut input_set = BTreeSet::new();
-  for item in &input {
-    input_set.insert(item);
-  }
-
-  for i in 0 .. input.len() {
-    let a = input[i];
-    if a > 2020 {
-      break;
-    }
-
-    let b = 2020 - a;
-    if input_set.contains(&b) {
-      let product = a * b;
-      println!("a: {:?}, b: {:?}, a*b: {:?}", a, b, product);
-      break;
-    }
-  }
-
-  let mut done = false;
-  for i in 0 .. input.len() {
-    if done {
-      break;
-    }
-
-    let a = input[i];
-    if a > 2020 {
-      break;
-    }
-
-    for j in i+1 .. input.len() {
-      let b = input[j];
-
-      if a + b > 2020 {
-        break;
+  {
+    let mut last_item = None;
+    let mut n_increases = 0;
+    for item in &input {
+      match last_item {
+        Some(value) => {
+          if *item > value {
+            n_increases += 1;
+          }
+        }
+        None => { }
       }
 
-      let c = 2020 - a - b;
-      if input_set.contains(&c) {
-        let product = a * b * c;
-        println!("a: {:?}, b: {:?}, c: {:?}, a*b*c: {:?}", a, b, c, product);
+      last_item = Some(*item);
+    }
 
-        done = true;
-        break;
+    println!("{}", n_increases);
+  }
+
+  {
+    let mut window = Vec::new();
+    let mut last_sum = None;
+    let mut n_increases = 0;
+    for item in &input {
+      window.push(item);
+      if window.len() > 3 {
+        let _ = window.remove(0);
+      }
+
+      if window.len() == 3 {
+        let mut sum = 0;
+        for a in &window {
+          sum += *a;
+        }
+
+        match last_sum {
+          None => { }
+          Some(value) => {
+            if sum > value {
+              n_increases += 1;
+            }
+          }
+        }
+
+        last_sum = Some(sum);
       }
     }
+
+    println!("{}", n_increases);
   }
 
   Ok(())

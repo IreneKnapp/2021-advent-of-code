@@ -9,8 +9,8 @@ fn personal_input() -> Result<(), Box<dyn std::error::Error>> {
 
   command.arg("input");
   command.assert().success().stdout(
-      "a: 246, b: 1774, a*b: 436404\n\
-      a: 448, b: 721, c: 851, a*b*c: 274879808\n");
+      "1215\n\
+      1150\n");
 
   Ok(())
 }
