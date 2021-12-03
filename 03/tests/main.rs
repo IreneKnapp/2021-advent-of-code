@@ -5,12 +5,12 @@ use std::process::Command;
 
 #[test]
 fn personal_input() -> Result<(), Box<dyn std::error::Error>> {
-  let mut command = Command::cargo_bin("advent_02")?;
+  let mut command = Command::cargo_bin("advent_03")?;
 
   command.arg("input");
   command.assert().success().stdout(
-      "1813801\n\
-      1960569556\n");
+      "3277364\n\
+      5736383\n");
 
   Ok(())
 }
