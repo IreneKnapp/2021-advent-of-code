@@ -2,6 +2,7 @@
 pub enum Error {
   IO(std::io::Error),
   Parse,
+  Unspecified,
 }
 
 impl std::error::Error for Error { }
@@ -11,6 +12,7 @@ impl std::fmt::Display for Error {
     match self {
       Error::IO(e) => e.fmt(f),
       Error::Parse => f.write_str("Parse error"),
+      Error::Unspecified => f.write_str("Unspecified error (bad luck!)"),
     }
   }
 }

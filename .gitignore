@@ -3,3 +3,4 @@
 /result-*
 **/*.rs.bk
 *.swp
+*.swo
