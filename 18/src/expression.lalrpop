@@ -1,0 +1,34 @@
+use crate::types::{Pair, Value};
+
+grammar;
+
+pub Pair: Pair = {
+  LEFT_BRACKET <left:Value> COMMA <right:Value> RIGHT_BRACKET => {
+    Pair {
+      left: left,
+      right: right,
+    }
+  },
+};
+
+Value: Value = {
+  NUMBER => {
+    Value::Literal(<>.parse::<i64>().unwrap())
+  },
+  Pair => {
+    Value::Pair(Box::new(<>))
+  },
+};
+
+match {
+  r"\p{Zs}+" => { },
+
+  r"[0-9]+" => NUMBER,
+
+  "," => COMMA,
+
+  "[" => LEFT_BRACKET,
+
+  "]" => RIGHT_BRACKET,
+}
+
