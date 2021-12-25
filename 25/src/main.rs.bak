@@ -1,0 +1,379 @@
+use advent_lib::prelude::*;
+
+#[derive(Debug,Clone,Eq,PartialEq)]
+enum Instruction {
+  Inp(Variable),
+  Add(Variable, Expression),
+  Mul(Variable, Expression),
+  Div(Variable, Expression),
+  Mod(Variable, Expression),
+  Eql(Variable, Expression),
+}
+
+#[derive(Debug,Clone,Eq,PartialEq)]
+enum Expression {
+  Variable(Variable),
+  Literal(i64),
+}
+
+#[derive(Debug,Clone,Copy,Eq,PartialEq)]
+enum Variable {
+  W,
+  X,
+  Y,
+  Z,
+}
+
+#[derive(Debug,Clone,Eq,PartialEq)]
+struct State {
+  w: i64,
+  x: i64,
+  y: i64,
+  z: i64,
+  program_counter: usize,
+  input: Vec<i64>,
+}
+
+
+fn main() -> Result<()> {
+  let mut args = std::env::args();
+  if args.len() != 2 {
+    eprintln!("Usage: advent input");
+  }
+  let _ = args.next();
+  let filename = args.next().unwrap();
+
+  let input = advent_lib::read_lines_file(&filename)?;
+
+  let mut program = Vec::new();
+  for line in &input {
+    let words: Vec<&str> = line.split_whitespace().collect();
+    match words[0] {
+      "inp" => {
+        let a = parse_variable(words[1]);
+        program.push(Instruction::Inp(a));
+      },
+      "add" => {
+        let a = parse_variable(words[1]);
+        let b = parse_expression(words[2]);
+        program.push(Instruction::Add(a, b));
+      },
+      "mul" => {
+        let a = parse_variable(words[1]);
+        let b = parse_expression(words[2]);
+        program.push(Instruction::Mul(a, b));
+      },
+      "div" => {
+        let a = parse_variable(words[1]);
+        let b = parse_expression(words[2]);
+        program.push(Instruction::Div(a, b));
+      },
+      "mod" => {
+        let a = parse_variable(words[1]);
+        let b = parse_expression(words[2]);
+        program.push(Instruction::Mod(a, b));
+      },
+      "eql" => {
+        let a = parse_variable(words[1]);
+        let b = parse_expression(words[2]);
+        program.push(Instruction::Eql(a, b));
+      },
+      _ => panic!("not an instruction"),
+    }
+  }
+
+  let initial_state = State {
+    w: 0,
+    x: 0,
+    y: 0,
+    z: 0,
+    input: Vec::new(),
+    program_counter: 0,
+  };
+
+  /*
+  for w in 1 .. 10 {
+    for z in 254176 .. 394784 {
+    //for z in 9776 .. 15185 {
+      let mut ws = vec![w];
+
+      let mut state = initial_state.clone();
+      state.input = ws.clone();
+      state.z = z;
+      //state.program_counter = 0; // start of iteration 0
+      //state.program_counter = 18; // start of iteration 1
+      //state.program_counter = 36; // start of iteration 2
+      //state.program_counter = 54; // start of iteration 3
+      //state.program_counter = 72; // start of iteration 4
+      //state.program_counter = 90; // start of iteration 5
+      //state.program_counter = 108; // start of iteration 6
+      //state.program_counter = 126; // start of iteration 7
+      //state.program_counter = 144; // start of iteration 8
+      //state.program_counter = 162; // start of iteration 9
+      state.program_counter = 180; // start of iteration 10
+
+      run_until(&mut state, &program, 198); // start of iteration 11
+      if state.x == 0
+      //if state.z >= 9776 && state.z <= 15184
+        //&& state.z / 26 - 3 >= 1 && state.z / 26 - 3 <= 9
+      {
+        println!("yay {} {}", state.z / 26, state.x);
+        let new_w = state.z / 26 - 3;
+        ws.push(new_w);
+        state.input.push(new_w);
+      } else {
+        continue;
+      }
+
+      run_until(&mut state, &program, 216); // start of iteration 12
+      if state.z >= 376 && state.z <= 584
+        && (state.z - 350) / 26 >= 1 && (state.z - 350) / 26 <= 9
+      {
+        let new_w = state.z / 26 - 12;
+        ws.push(new_w);
+        state.input.push(new_w);
+      } else {
+        continue;
+      }
+
+      run_until(&mut state, &program, 234); // start of iteration 13
+      if state.z >= 14 && state.z <= 22 {
+        let new_w = state.z - 13;
+        ws.push(new_w);
+        state.input.push(new_w);
+      } else {
+        continue;
+      }
+
+      run(&mut state, &program);
+      if state.z == 0 {
+        println!("success! w = {:?}, z = {}", ws, z);
+      }
+    }
+  }
+  */
+
+  /*
+  let mut input = Vec::new();
+  for _ in 0 .. 14 {
+    input.push(9);
+  }
+  input[13] = 9;
+
+  let mut odometer = 0;
+  loop {
+    if input[0] == 3 {
+      let mut state = initial_state.clone();
+      //state.input = input.clone();
+
+      run(&mut state, &program);
+      //run_fake(&mut state);
+      if state.z == 0 {
+        break;
+      }
+
+      odometer += 1;
+      if odometer % 1 == 0 {
+        print!("iteration {} ", odometer);
+        debug_input(&input);
+        debug_state(&state);
+      }
+    }
+
+    for i in 0 .. 14 {
+      input[i] -= 1;
+      if input[i] == 0 {
+        input[i] = 9;
+        if i == 13 {
+          println!("tried everything");
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+  }
+  debug_input(&input);
+  */
+
+
+  let mut state = initial_state.clone();
+  for w in 1 .. 10 {
+  run_until(&mut state, &program, 18); // start of iteration 1
+  run_until(&mut state, &program, 36); // start of iteration 2
+  run_until(&mut state, &program, 54); // start of iteration 3
+  run_until(&mut state, &program, 72); // start of iteration 4
+  run_until(&mut state, &program, 90); // start of iteration 5
+  run_until(&mut state, &program, 108); // start of iteration 6
+  run_until(&mut state, &program, 126); // start of iteration 7
+  run_until(&mut state, &program, 144); // start of iteration 8
+  run_until(&mut state, &program, 162); // start of iteration 9
+  run_until(&mut state, &program, 180); // start of iteration 10
+  run_until(&mut state, &program, 198); // start of iteration 11
+  run_until(&mut state, &program, 216); // start of iteration 12
+  run_until(&mut state, &program, 234); // start of iteration 13
+
+
+  Ok(())
+}
+
+
+fn parse_expression(word: &str) -> Expression {
+  match word {
+    "w" => Expression::Variable(Variable::W),
+    "x" => Expression::Variable(Variable::X),
+    "y" => Expression::Variable(Variable::Y),
+    "z" => Expression::Variable(Variable::Z),
+    _ => Expression::Literal(word.parse::<i64>().unwrap()),
+  }
+}
+
+
+fn parse_variable(word: &str) -> Variable {
+  match word {
+    "w" => Variable::W,
+    "x" => Variable::X,
+    "y" => Variable::Y,
+    "z" => Variable::Z,
+    _ => panic!("not a variable name"),
+  }
+}
+
+
+#[allow(dead_code)]
+fn run(state: &mut State, program: &Vec<Instruction>) {
+  loop {
+    if is_done(state, program) {
+      break;
+    }
+    iterate(state, program);
+  }
+}
+
+
+#[allow(dead_code)]
+fn run_until(state: &mut State, program: &Vec<Instruction>, end: usize) {
+  loop {
+    if state.program_counter == end {
+      break;
+    }
+    iterate(state, program);
+  }
+}
+
+
+fn iterate(state: &mut State, program: &Vec<Instruction>) {
+  match &program[state.program_counter] {
+    Instruction::Inp(a) => {
+      //debug_state(state);
+
+      let result = state.input.pop().unwrap();
+      set_variable(state, &a, result);
+    },
+    Instruction::Add(a, b) => {
+      let a_value = evaluate_variable(state, &a);
+      let b_value = evaluate_expression(state, &b);
+      let result = a_value + b_value;
+      set_variable(state, &a, result);
+    },
+    Instruction::Mul(a, b) => {
+      let a_value = evaluate_variable(state, &a);
+      let b_value = evaluate_expression(state, &b);
+      let result = a_value * b_value;
+      set_variable(state, &a, result);
+    },
+    Instruction::Div(a, b) => {
+      let a_value = evaluate_variable(state, &a);
+      let b_value = evaluate_expression(state, &b);
+      let result = a_value / b_value;
+      set_variable(state, &a, result);
+    },
+    Instruction::Mod(a, b) => {
+      let a_value = evaluate_variable(state, &a);
+      let b_value = evaluate_expression(state, &b);
+      let result = a_value % b_value;
+      set_variable(state, &a, result);
+    },
+    Instruction::Eql(a, b) => {
+      let a_value = evaluate_variable(state, &a);
+      let b_value = evaluate_expression(state, &b);
+      let result = if a_value == b_value { 1 } else { 0 };
+      set_variable(state, &a, result);
+    },
+  }
+
+  state.program_counter += 1;
+}
+
+
+fn evaluate_expression(state: &State, expression: &Expression) -> i64 {
+  match expression {
+    Expression::Variable(Variable::W) => state.w,
+    Expression::Variable(Variable::X) => state.x,
+    Expression::Variable(Variable::Y) => state.y,
+    Expression::Variable(Variable::Z) => state.z,
+    Expression::Literal(n) => *n,
+  }
+}
+
+
+fn evaluate_variable(state: &State, variable: &Variable) -> i64 {
+  match variable {
+    Variable::W => state.w,
+    Variable::X => state.x,
+    Variable::Y => state.y,
+    Variable::Z => state.z,
+  }
+}
+
+
+fn set_variable(state: &mut State, variable: &Variable, value: i64) {
+  match variable {
+    Variable::W => { state.w = value; },
+    Variable::X => { state.x = value; },
+    Variable::Y => { state.y = value; },
+    Variable::Z => { state.z = value; },
+  }
+}
+
+
+fn is_done(state: &State, program: &Vec<Instruction>) -> bool {
+  if state.program_counter >= program.len() {
+    return true;
+  }
+
+  false
+}
+
+
+#[allow(dead_code)]
+fn debug_input(input: &Vec<i64>) {
+  for digit in input.iter().rev() {
+    print!("{}", digit);
+  }
+  println!("");
+}
+
+
+#[allow(dead_code)]
+fn debug_state(state: &State) {
+  println!("line {}:   {}    {}    {}    {}", state.program_counter, state.w,
+    state.x, state.y, state.z);
+}
+
+
+#[allow(dead_code)]
+fn run_fake(state: &mut State) {
+  //           0    1   2    3   4   5   6    7   8   9  10   11   12   13
+  let m = vec![1,   1,  1,  26,  1, 26,  1,  26,  1,  1, 26,  26,  26,  26];
+  let n = vec![10, 13, 15, -12, 14, -2, 13, -12, 15, 11, -3, -13, -12, -13];
+  let o = vec![10,  5, 12,  12,  6,  4, 15,   3,  7, 11,  2,  12,   4,  11];
+  for i in 0 .. 14 {
+    state.w = state.input.pop().unwrap();
+    state.x = state.z % 26;
+    state.z /= m[i];
+    state.x = if state.x + n[i] != state.w { 1 } else { 0 };
+    state.z = state.z * (25 * state.x + 1) + (state.w + o[i]) * state.x;
+  }
+}
+

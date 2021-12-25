@@ -1,0 +1,278 @@
+; 0 0 0 0
+inp w        ; w = digit[0]
+mul x 0      ; nop
+add x z      ; nop
+mod x 26     ; nop
+div z 1      ; nop                  **NOTE** parameter M[0] = 1
+add x 10     ; x = 10               **NOTE** parameter N[0] = 10
+eql x w      ; x = (digit[0] == 10), which is 0 for valid input
+eql x 0      ; x = (digit[0] != 10), which is 1 for valid input
+mul y 0      ; nop
+add y 25     ; y = 25
+mul y x      ; y = 25 if valid digit, 0 otherwise
+add y 1      ; y = 26 if valid digit, 1 otherwise
+mul z y      ; nop
+mul y 0      ; y = 0
+add y w      ; y = digit[0]
+add y 10     ; y = digit[0] + 10    **NOTE** parameter O[0] = 10
+mul y x      ; y = digit[0] + 10 if valid digit, 0 otherwise
+add z y      ; z = digit[0] + 10 if valid digit, 0 otherwise
+
+let m = vec![1, 1, 1, 26, 1, 26, 1, 26, 1, 1, 26, 26, 26, 26];
+let n = vec![10, 13, 15, -12, 14, -2, 13, -12, 15, 11, -3, -13, -12, -13];
+let o = vec![10, 5, 12, 12, 6, 4, 15, 3, 7, 11, 2, 12, 4, 11];
+for i in 0 .. 14 {
+  w = input.pop();
+  x = if ((z % 26) / m[i] + n[i]) != w { 1 } else { 0 };
+  z = z * (25 * x + 1) + (w + o[i]) * x;
+}
+
+; _ _ a a    where a = digit[0] + 10 if valid digit, 0 otherwise
+inp w        ; w = digit[1]
+mul x 0      ; x = 0
+add x z      ; x = a
+mod x 26     ; x = a % 26
+div z 1      ; nop                  **NOTE** parameter M[0] = 1
+add x 13     ; x = a % 26 + 13      **NOTE** parameter N[1] = 13
+eql x w      ; x = (a % 26 + 13) == digit[1]
+eql x 0      ; x = (a % 26 + 13) != digit[1], 1 for valid-so-far
+mul y 0      ; y = 0
+add y 25     ; y = 25
+mul y x      ; y = 25 if valid-so-far, 0 otherwise
+add y 1      ; y = 26 if valid-so-far, 1 otherwise
+mul z y      ; z = a * 26 if valid-so-far, a otherwise
+mul y 0      ; y = 0
+add y w      ; y = digit[1]
+add y 5      ; y = digit[1] + 5     **NOTE** parameter O[1] = 5
+mul y x      ; y = digit[1] + 5 if valid digit, 0 otherwise
+add z y      ; z += y, thus fail if y is nonzero
+; fail if z is nonzero
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1      ; note
+add x 15     ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 12     ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26     ; note
+add x -12    ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 12     ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1      ; note
+add x 14     ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 6      ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26    ; note
+add x -2    ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 4     ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1     ; note
+add x 13    ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 15    ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26    ; note
+add x -12   ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 3     ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1     ; note
+add x 15    ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 7     ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 1     ; note
+add x 11    ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 11    ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26    ; note
+add x -3    ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 2     ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26    ; note
+add x -13   ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 12    ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26    ; note
+add x -12   ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 4     ; note
+mul y x
+add z y
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z 26    ; note
+add x -13   ; note
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y 11    ; note
+mul y x
+add z y
+
